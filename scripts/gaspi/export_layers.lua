@@ -70,7 +70,11 @@ local function exportLayers(sprite, root_layer, filename, group_sep, data)
             layer.isVisible = true
             filename = filename:gsub("{layergroups}", "")
             filename = filename:gsub("{layername}", layer.name)
-            os.execute("mkdir \"" .. Dirname(filename) .. "\"")
+            -- only create dir if necessary
+            -- reason is that mkdir is pretty slow
+            if string.match(filename, "\\|/") then
+                os.execute("mkdir \"" .. Dirname(filename) .. "\"")
+            end
             if data.spritesheet then
                 local sheettype=SpriteSheetType.HORIZONTAL
                 if (data.tagsplit == "To Rows") then
@@ -263,7 +267,7 @@ dlg:show()
 if not dlg.data.ok then return 0 end
 
 -- Get path and filename
-local output_path = Dirname(dlg.data.directory)
+local output_path = Dirname(dlg.data.directory) -- we don't have to create this dir since the user selected it
 local filename = dlg.data.filename .. "." .. dlg.data.format
 
 if output_path == nil then
